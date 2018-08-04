@@ -8,11 +8,15 @@ def get_ip():
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36"
     }
     proxies = {"https": "1.119.129.2:8080"}
-    response = requests.get(url, headers=headers, proxies=proxies)
-    html = response.text
-    text = etree.HTML(html)
-    result = text.xpath('//*[@id="rightinfo"]/dl//text()')
-    return result
+    try:
+        response = requests.get(url, headers=headers, proxies=proxies)
+        if response.status_code == 200:
+            result = etree.HTML(response.text).xpath(
+                '//*[@id="rightinfo"]/dl//text()')
+            return result
+    except requests.ConnectionError as e:
+        print(e)
+        return None
 
 
 if __name__ == "__main__":
